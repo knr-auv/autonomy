@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import py_trees
+
+if __name__ == '__main__':
+
+    root = py_trees.composites.Selector(
+        name="localizationTaskTree")
+
+    child1 = py_trees.decorators.OneShot(
+        name="OneShot",
+        child=py_trees.decorators.SuccessIsFailure(
+            name="SuccessIsFailure",
+            child=py_trees.behaviours.Success(
+                name="setBlackboard(M = 3)"))
+    )
+
+    child2 = py_trees.composites.Sequence(
+        name="Sequence",
+        children=[
+            py_trees.behaviours.Success(
+                name="tryDetectNTimes(yellowFlare,M)"
+            ),
+            py_trees.behaviours.Success(
+                name="setDepth(depth)"
+            ),
+            py_trees.behaviours.Success(
+                name="rotate(yaw)"
+            ),
+            py_trees.behaviours.Success(
+                name="setVelocity(forward)"
+            )
+        ]
+    )
+
+    child3 = py_trees.composites.Sequence(
+        name="Sequence",
+        children=[
+            py_trees.behaviours.Success(
+                name="wait(time)"
+            ),
+            py_trees.behaviours.Success(
+                name="setVelocity(stop)"
+            ),
+            py_trees.behaviours.Success(
+                name="rotate(yaw)"
+            )
+        ]
+    )
+
+    root.add_children([child1, child2, child3])
+
+    py_trees.display.render_dot_tree(root)

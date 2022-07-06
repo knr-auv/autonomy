@@ -1,0 +1,31 @@
+digraph pastafarianism {
+ordering=out;
+graph [fontname="times-roman"];
+node [fontname="times-roman"];
+edge [fontname="times-roman"];
+localizationTaskTree [fillcolor=cyan, fontcolor=black, fontsize=9, label=localizationTaskTree, shape=octagon, style=filled];
+OneShot [fillcolor=ghostwhite, fontcolor=black, fontsize=9, label=OneShot, shape=ellipse, style=filled];
+localizationTaskTree -> OneShot;
+SuccessIsFailure [fillcolor=ghostwhite, fontcolor=black, fontsize=9, label=SuccessIsFailure, shape=ellipse, style=filled];
+OneShot -> SuccessIsFailure;
+"setBlackboard(M = 3)" [fillcolor=gray, fontcolor=black, fontsize=9, label="setBlackboard(M = 3)", shape=ellipse, style=filled];
+SuccessIsFailure -> "setBlackboard(M = 3)";
+Sequence [fillcolor=orange, fontcolor=black, fontsize=9, label="Ⓜ Sequence", shape=box, style=filled];
+localizationTaskTree -> Sequence;
+"tryDetectNTimes(yellowFlare,M)" [fillcolor=gray, fontcolor=black, fontsize=9, label="tryDetectNTimes(yellowFlare,M)", shape=ellipse, style=filled];
+Sequence -> "tryDetectNTimes(yellowFlare,M)";
+"setDepth(depth)" [fillcolor=gray, fontcolor=black, fontsize=9, label="setDepth(depth)", shape=ellipse, style=filled];
+Sequence -> "setDepth(depth)";
+"rotate(yaw)" [fillcolor=gray, fontcolor=black, fontsize=9, label="rotate(yaw)", shape=ellipse, style=filled];
+Sequence -> "rotate(yaw)";
+"setVelocity(forward)" [fillcolor=gray, fontcolor=black, fontsize=9, label="setVelocity(forward)", shape=ellipse, style=filled];
+Sequence -> "setVelocity(forward)";
+"Sequence*" [fillcolor=orange, fontcolor=black, fontsize=9, label="Ⓜ Sequence*", shape=box, style=filled];
+localizationTaskTree -> "Sequence*";
+"wait(time)" [fillcolor=gray, fontcolor=black, fontsize=9, label="wait(time)", shape=ellipse, style=filled];
+"Sequence*" -> "wait(time)";
+"setVelocity(stop)" [fillcolor=gray, fontcolor=black, fontsize=9, label="setVelocity(stop)", shape=ellipse, style=filled];
+"Sequence*" -> "setVelocity(stop)";
+"rotate(yaw)*" [fillcolor=gray, fontcolor=black, fontsize=9, label="rotate(yaw)*", shape=ellipse, style=filled];
+"Sequence*" -> "rotate(yaw)*";
+}
