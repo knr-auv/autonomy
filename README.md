@@ -26,8 +26,6 @@ knr-auv/autonomy is a software for the development of a behavioral tree-based au
 
 2. Update Conda Environment Dependencies
 
-    conda env update --file local.yml --prune
-
     ```bash
-    conda env update -f environment.yml
+    conda env update -f environment.yml --prune
     ```
