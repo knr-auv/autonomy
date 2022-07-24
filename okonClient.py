@@ -248,6 +248,105 @@ class OkonClient:
         self.syncTime = time.time()
         self.sync_interval = sync_interval
         self._to_send = Queue()
+        self.switch_dict = dict()
+        self._init_switch_dict()
+
+    def handle_SET_MTR(self, packet_flag, data_bytes):
+        manual = json.loads(data_bytes.decode())
+        self.okon.control["manual"] = manual
+    def handle_ARM_MTR(self, packet_flag, data_bytes):
+        pass
+    def handle_DISARM_MTR(self, packet_flag, data_bytes):
+        pass
+    def handle_SET_CONTROL_MODE(self, packet_flag, data_bytes):
+        self.okon.control["mode"] = data_bytes.decode()
+    def handle_SET_ACRO(self, packet_flag, data_bytes):
+        acro = json.loads(data_bytes.decode())
+        self.okon.control["acro"] = acro
+    def handle_SET_STABLE(self, packet_flag, data_bytes):
+        stable = json.loads(data_bytes.decode())
+        self.okon.control["stable"] = stable
+    def handle_SET_PID(self, packet_flag, data_bytes):
+        pids = json.loads(data_bytes.decode())
+        self.okon.pids = pids
+    def handle_GET_SENS(self, packet_flag, data_bytes):
+        sens = json.loads(data_bytes.decode())
+        sens["rot "] = angle_norm(sens["rot"])
+        self.okon.sens["baro"] = sens["baro"]["pressure"]
+        self.okon.sens["imu"] = sens
+    def handle_GET_DEPTH(self, packet_flag, data_bytes):
+        pass
+    def handle_GET_DEPTH_BYTES(self, packet_flag, data_bytes):
+        pass
+    def handle_GET_VIDEO_BYTES(self, packet_flag, data_bytes):
+        pass
+    def handle_GET_VIDEO(self, packet_flag, data_bytes):
+        pass
+    def handle_SET_SIM(self, packet_flag, data_bytes):
+        pass
+    def handle_ACK(self, packet_flag, data_bytes):
+        pass
+    def handle_SET_ORIEN(self, packet_flag, data_bytes):
+        orien = json.loads(data_bytes.decode())
+        self.okon.orien["pos"] = orien["pos"]
+        self.okon.orien["rot"] = angle_norm(orien["rot"])
+    def handle_RST_SIM(self, packet_flag, data_bytes):
+        self._emit_event("simRST")
+    def handle_PING(self, packet_flag, data_bytes):
+        self._emit_event("ping", data_bytes.decode())
+    def handle_GET_CPS(self, packet_flag, data_bytes):
+        checkpoints = json.loads(data_bytes.decode())
+        self.simulation.checkpoints = checkpoints
+    def handle_HIT_NGZ(self, packet_flag, data_bytes):
+        ngz = json.loads(data_bytes.decode())
+        self._emit_event("hitNGZ", ngz["id"])
+    def handle_HIT_FZ(self, packet_flag, data_bytes):
+        fz = json.loads(data_bytes.decode())
+        self._emit_event("hitFZ", fz["id"])
+    def handle_CHK_AP(self, packet_flag, data_bytes):
+        pass
+    def handle_ERROR(self, packet_flag, data_bytes):
+        error = json.loads(data_bytes.decode())
+        self._emit_event("error", error)
+    def handle_REC_STRT(self, packet_flag, data_bytes):
+        pass
+    def handle_REC_ST(self, packet_flag, data_bytes):
+        pass
+    def handle_REC_RST(self, packet_flag, data_bytes):
+        pass
+    def handle_GET_REC(self, packet_flag, data_bytes):
+        pass
+    def handle_GET_DETE(self, packet_flag, data_bytes):
+        self.okon.sens["detection"] = json.loads(data_bytes.decode())
+
+    def _init_switch_dict(self):
+        self.switch_dict[PacketType.SET_MTR] = self.handle_SET_MTR
+        self.switch_dict[PacketType.ARM_MTR] = self.handle_ARM_MTR
+        self.switch_dict[PacketType.DISARM_MTR] = self.handle_DISARM_MTR
+        self.switch_dict[PacketType.SET_CONTROL_MODE] = self.handle_SET_CONTROL_MODE
+        self.switch_dict[PacketType.SET_ACRO] = self.handle_SET_ACRO
+        self.switch_dict[PacketType.SET_STABLE] = self.handle_SET_STABLE
+        self.switch_dict[PacketType.SET_PID] = self.handle_SET_PID
+        self.switch_dict[PacketType.GET_SENS] = self.handle_GET_SENS
+        self.switch_dict[PacketType.GET_DEPTH] = self.handle_GET_DEPTH
+        self.switch_dict[PacketType.GET_DEPTH_BYTES] = self.handle_GET_DEPTH_BYTES
+        self.switch_dict[PacketType.GET_VIDEO_BYTES] = self.handle_GET_VIDEO_BYTES
+        self.switch_dict[PacketType.GET_VIDEO] = self.handle_GET_VIDEO
+        self.switch_dict[PacketType.SET_SIM] = self.handle_SET_SIM
+        self.switch_dict[PacketType.ACK] = self.handle_ACK
+        self.switch_dict[PacketType.SET_ORIEN] = self.handle_SET_ORIEN
+        self.switch_dict[PacketType.RST_SIM] = self.handle_RST_SIM
+        self.switch_dict[PacketType.PING] = self.handle_PING
+        self.switch_dict[PacketType.GET_CPS] = self.handle_GET_CPS
+        self.switch_dict[PacketType.HIT_NGZ] = self.handle_HIT_NGZ
+        self.switch_dict[PacketType.HIT_FZ] = self.handle_HIT_FZ
+        self.switch_dict[PacketType.CHK_AP] = self.handle_CHK_AP
+        self.switch_dict[PacketType.ERROR] = self.handle_ERROR
+        self.switch_dict[PacketType.REC_STRT] = self.handle_REC_STRT
+        self.switch_dict[PacketType.REC_ST] = self.handle_REC_ST
+        self.switch_dict[PacketType.REC_RST] = self.handle_REC_RST
+        self.switch_dict[PacketType.GET_REC] = self.handle_GET_REC
+        self.switch_dict[PacketType.GET_DETE] = self.handle_GET_DETE
 
     def connect(self) -> bool:
         if self.debug:
@@ -314,80 +413,89 @@ class OkonClient:
             data_bytes = self._receiveAll(dataLength)
             self._handle_packet(packet_typeFlag[0], packet_typeFlag[1], data_bytes)
 
+
+
     def _handle_packet(self, packet_type: int, packet_flag: int, data_bytes: bytes):
         if self.debug and packet_flag & PacketFlag.DO_NOT_LOG_PACKET == 0:
             print(
                 f'RECV {PacketType.get(packet_type)} {PacketFlag.get(packet_flag)} len:{len(data_bytes)} {data_bytes.decode("utf-8")[:40]}'
             )
-        if packet_type == PacketType.SET_MTR:
-            manual = json.loads(data_bytes.decode())
-            self.okon.control["manual"] = manual
-        elif packet_type == PacketType.ARM_MTR:
-            pass
-        elif packet_type == PacketType.DISARM_MTR:
-            pass
-        elif packet_type == PacketType.SET_CONTROL_MODE:
-            self.okon.control["mode"] = data_bytes.decode()
-        elif packet_type == PacketType.SET_ACRO:
-            acro = json.loads(data_bytes.decode())
-            self.okon.control["acro"] = acro
-        elif packet_type == PacketType.SET_STABLE:
-            stable = json.loads(data_bytes.decode())
-            self.okon.control["stable"] = stable
-        elif packet_type == PacketType.SET_PID:
-            pids = json.loads(data_bytes.decode())
-            self.okon.pids = pids
-        elif packet_type == PacketType.GET_SENS:
-            sens = json.loads(data_bytes.decode())
-            sens["rot "] = angle_norm(sens["rot"])
-            self.okon.sens["baro"] = sens["baro"]["pressure"]
-            self.okon.sens["imu"] = sens
-        elif packet_type == PacketType.GET_DEPTH:
-            pass
-        elif packet_type == PacketType.GET_DEPTH_BYTES:
-            pass
-        elif packet_type == PacketType.GET_VIDEO_BYTES:
-            pass
-        elif packet_type == PacketType.GET_VIDEO:
-            pass
-        elif packet_type == PacketType.SET_SIM:
-            pass
-        elif packet_type == PacketType.ACK:
-            pass
-        elif packet_type == PacketType.SET_ORIEN:
-            orien = json.loads(data_bytes.decode())
-            self.okon.orien["pos"] = orien["pos"]
-            self.okon.orien["rot"] = angle_norm(orien["rot"])
-        elif packet_type == PacketType.RST_SIM:
-            self._emit_event("simRST")
-        elif packet_type == PacketType.PING:
-            self._emit_event("ping", data_bytes.decode())
-        elif packet_type == PacketType.GET_CPS:
-            checkpoints = json.loads(data_bytes.decode())
-            self.simulation.checkpoints = checkpoints
-        elif packet_type == PacketType.HIT_NGZ:
-            ngz = json.loads(data_bytes.decode())
-            self._emit_event("hitNGZ", ngz["id"])
-        elif packet_type == PacketType.HIT_FZ:
-            fz = json.loads(data_bytes.decode())
-            self._emit_event("hitFZ", fz["id"])
-        elif packet_type == PacketType.CHK_AP:
-            pass
-        elif packet_type == PacketType.ERROR:
-            error = json.loads(data_bytes.decode())
-            self._emit_event("error", error)
-        elif packet_type == PacketType.REC_STRT:
-            pass
-        elif packet_type == PacketType.REC_ST:
-            pass
-        elif packet_type == PacketType.REC_RST:
-            pass
-        elif packet_type == PacketType.GET_REC:
-            pass
-        elif packet_type == PacketType.GET_DETE:
-            self.okon.sens["detection"] = json.loads(data_bytes.decode())
-        else:
-            self._emit_event("packet", (packet_type, packet_flag, data_bytes))
+        if True:
+            if packet_type in self.switch_dict:
+                self.switch_dict[packet_type](packet_flag, data_bytes)
+            else:
+                print('unknown packet')
+                self._emit_event("packet", (packet_type, packet_flag, data_bytes))
+        else: 
+            if packet_type == PacketType.SET_MTR:
+                manual = json.loads(data_bytes.decode())
+                self.okon.control["manual"] = manual
+            elif packet_type == PacketType.ARM_MTR:
+                pass
+            elif packet_type == PacketType.DISARM_MTR:
+                pass
+            elif packet_type == PacketType.SET_CONTROL_MODE:
+                self.okon.control["mode"] = data_bytes.decode()
+            elif packet_type == PacketType.SET_ACRO:
+                acro = json.loads(data_bytes.decode())
+                self.okon.control["acro"] = acro
+            elif packet_type == PacketType.SET_STABLE:
+                stable = json.loads(data_bytes.decode())
+                self.okon.control["stable"] = stable
+            elif packet_type == PacketType.SET_PID:
+                pids = json.loads(data_bytes.decode())
+                self.okon.pids = pids
+            elif packet_type == PacketType.GET_SENS:
+                sens = json.loads(data_bytes.decode())
+                sens["rot "] = angle_norm(sens["rot"])
+                self.okon.sens["baro"] = sens["baro"]["pressure"]
+                self.okon.sens["imu"] = sens
+            elif packet_type == PacketType.GET_DEPTH:
+                pass
+            elif packet_type == PacketType.GET_DEPTH_BYTES:
+                pass
+            elif packet_type == PacketType.GET_VIDEO_BYTES:
+                pass
+            elif packet_type == PacketType.GET_VIDEO:
+                pass
+            elif packet_type == PacketType.SET_SIM:
+                pass
+            elif packet_type == PacketType.ACK:
+                pass
+            elif packet_type == PacketType.SET_ORIEN:
+                orien = json.loads(data_bytes.decode())
+                self.okon.orien["pos"] = orien["pos"]
+                self.okon.orien["rot"] = angle_norm(orien["rot"])
+            elif packet_type == PacketType.RST_SIM:
+                self._emit_event("simRST")
+            elif packet_type == PacketType.GET_CPS:
+                checkpoints = json.loads(data_bytes.decode())
+                self.simulation.checkpoints = checkpoints
+            elif packet_type == PacketType.HIT_NGZ:
+                ngz = json.loads(data_bytes.decode())
+                self._emit_event("hitNGZ", ngz["id"])
+            elif packet_type == PacketType.HIT_FZ:
+                fz = json.loads(data_bytes.decode())
+                self._emit_event("hitFZ", fz["id"])
+            elif packet_type == PacketType.CHK_AP:
+                pass
+            elif packet_type == PacketType.ERROR:
+                error = json.loads(data_bytes.decode())
+                self._emit_event("error", error)
+            elif packet_type == PacketType.REC_STRT:
+                pass
+            elif packet_type == PacketType.REC_ST:
+                pass
+            elif packet_type == PacketType.REC_RST:
+                pass
+            elif packet_type == PacketType.GET_REC:
+                pass
+            elif packet_type == PacketType.GET_DETE:
+                self.okon.sens["detection"] = json.loads(data_bytes.decode())
+            elif packet_type == PacketType.PING:
+                self._emit_event("ping", data_bytes.decode())
+            else:
+                self._emit_event("packet", (packet_type, packet_flag, data_bytes))
 
     def disconnect(self) -> None:
         self.connected = False
