@@ -2,7 +2,7 @@
 
 knr-auv/autonomy is a software for the development of a behavioral tree-based autonomy module for the OKOŃ AUV built by KNR AUV team.
 
-## Dependencies
+## Installation with Dependencies
 
 1. Create Conda Environment and Install Dependencies
 
@@ -14,4 +14,20 @@ knr-auv/autonomy is a software for the development of a behavioral tree-based au
 
     ```bash
     conda activate okon-autonomy
+    ```
+
+## Updating Dependencies
+
+1. Activate Conda Environment
+
+    ```bash
+    conda activate okon-autonomy
+    ```
+
+2. Update Conda Environment Dependencies
+
+    conda env update --file local.yml --prune
+
+    ```bash
+    conda env update -f environment.yml
     ```
