@@ -1,47 +1,48 @@
 import py_trees
+import sys
 import time
 
 from okonClient import OkonClient
-from okonActions import Rotate, SetDepth, TryDetectNTimes
+from okonActions import Rotate, SetDepth
 
 oc = OkonClient(ip="127.0.0.1", port=44210, sync_interval=.05, debug=False)
 oc.connect()
 time.sleep(1.)
 
+def create_root():
+    root = py_trees.composites.Sequence("Sequence")
+    set_depth_action_1 = SetDepth(name = "Set Depth to 0.2 m",okon=oc.okon, depth=0.2, delta=0.005)
+    rotate_action_2 = Rotate(name = "Turn left",okon=oc.okon, add_angle=-45., delta=1.)
+    set_depth_action_3 = SetDepth(name = "Set Depth to 0.8 m",okon=oc.okon, depth=0.8, delta=0.005)
+    rotate_action_4 = Rotate(name = "Turn right",okon=oc.okon, add_angle=45., delta=1.)
+    root.add_children([set_depth_action_1, rotate_action_2, set_depth_action_3, rotate_action_4])
+    return root
+
+
+##############################################################################
+# Main
+##############################################################################
+
 def main():
     py_trees.logging.level = py_trees.logging.Level.DEBUG
 
-    set_depth_action = SetDepth(okon=oc.okon, depth=0.5, delta=0.005)
-    rotate_action = Rotate(okon=oc.okon, add_angle=-45., delta=1.)
-    try_detect_3_times = TryDetectNTimes(okon=oc.okon, object="gate", n=3)
+    root = create_root()
 
+    ####################
+    # Execute
+    ####################
 
-    try:
-        for _ in range(0, 10):
-            try_detect_3_times.tick_once()
-            time.sleep(0.5)
-        # for _ in range(0, 10):
-        #     set_depth_action.tick_once()
-        #     time.sleep(0.3)
-        # for _ in range(0, 9):
-        #     rotate_action.tick_once()
-        #     time.sleep(0.1)
-        # set_depth_action.update_depth(new_depth=0.8)
-        # for _ in range(0, 10):
-        #     set_depth_action.tick_once()
-        #     time.sleep(0.3)
-        # rotate_action.update_add_angle(new_add_angle=45)
-        # for _ in range(0, 9):
-        #     rotate_action.tick_once()
-        #     time.sleep(0.1)
-        # set_depth_action.update_depth(new_depth=0.2)
-        # for _ in range(0, 10):
-        #     set_depth_action.tick_once()
-        #     time.sleep(0.3)
-        # print("\n")
-    except KeyboardInterrupt:
-        print("")
-        pass
+    root.setup_with_descendants()
+    for i in range(0, 30):
+        try:
+            print("\n--------- Tick {0} ---------\n".format(i))
+            root.tick_once()
+            print("\n")
+            print(py_trees.display.unicode_tree(root=root, show_status=True))
+            time.sleep(.5)
+        except KeyboardInterrupt:
+            break
+    print("\n")
 
 if __name__ == '__main__':
     main()
