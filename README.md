@@ -7,7 +7,8 @@ knr-auv/autonomy is a software for the development of a behavioral tree-based au
 Behavioral tree projects placed in the BTs directory can be opened/edited using [the Behavior Tree Visual Editor](https://opensource.adobe.com/behavior_tree_editor).
 
 Links to JSON files with projects of Behavior Trees:
-    - [Qualification Task Behavior Tree](BTs/qualificationTaskProjet.json)
+
+- [Qualification Task Behavior Tree](BTs/qualificationTaskProjet.json)
 
 ## Usage
 
