@@ -6,7 +6,12 @@ knr-auv/autonomy is a software for the development of a behavioral tree-based au
 
 Behavioral tree projects placed in the BTs directory can be opened/edited using [the Behavior Tree Visual Editor](https://opensource.adobe.com/behavior_tree_editor).
 
-## Creating Conda Environment with Dependencies (Python)
+Links to JSON files with projects of Behavior Trees:
+    - [Qualification Task Behavior Tree](BTs/qualificationTaskProjet.json)
+
+## Usage
+
+### Creating Conda Environment with Dependencies (Python)
 
 1. Create Conda Environment and Install Dependencies
 
@@ -20,7 +25,7 @@ Behavioral tree projects placed in the BTs directory can be opened/edited using 
     conda activate okon-autonomy
     ```
 
-## Updating Dependencies (Python)
+### Updating Dependencies (Python) - if environment.yml file changed
 
 1. Activate Conda Environment
 
@@ -32,4 +37,26 @@ Behavioral tree projects placed in the BTs directory can be opened/edited using 
 
     ```bash
     conda env update -f environment.yml --prune
+    ```
+
+### Running Qualification Task Behavior Tree
+
+1. Run Okon.exe file (simulation-2.3dev)
+
+2. Activate Conda Environment
+
+    ```bash
+    conda activate okon-autonomy
+    ```
+
+3. Move AUV to starting position
+
+    ```bash
+    python go-to-starting-line.py
+    ```
+
+4. Run Behavior Tree
+
+    ```bash
+    python qualificationTaskBehaviorTree.py
     ```
