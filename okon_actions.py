@@ -1,7 +1,11 @@
-import py_trees
+""" Module with implementation of OKON actions using py_trees
+
+"""
 import math
-import time
 import sys
+import time
+
+import py_trees
 
 from okon_client import Okon
 
@@ -72,7 +76,7 @@ class SetVelocity(py_trees.behaviour.Behaviour):
         self.okon.set_stable_vel(x=self.x, y=self.y, z=self.z)
         new_status = py_trees.common.Status.SUCCESS
         if new_status == py_trees.common.Status.SUCCESS:
-            self.feedback_message = "Speed set as: Vx = {0:.3f} Vy = {0:.3f} Vz = {0:.3f}.".format(
+            self.feedback_message = "Speed set as: Vx = {0:.3f} Vy = {1:.3f} Vz = {2:.3f}.".format(
                 self.x, self.y, self.z)
         self.logger.debug(
             "%s.update()[%s->%s][%s]" % (
@@ -82,9 +86,6 @@ class SetVelocity(py_trees.behaviour.Behaviour):
             )
         )
         return new_status
-
-    def update_depth(self, new_depth):
-        self.depth = new_depth
 
     def terminate(self, new_status):
         """Nothing to clean up in this example."""
@@ -102,6 +103,7 @@ class Rotate(py_trees.behaviour.Behaviour):
         super().__init__(name)
         self.okon = okon
         self.add_angle = add_angle
+        self.target_angle = self.okon.sens['imu']['rot']['y'] + self.add_angle
         self.delta = delta
         self.logger.debug("%s.__init__()" % (self.__class__.__name__))
 
@@ -151,6 +153,8 @@ class RotateDeltaYawAngle(py_trees.behaviour.Behaviour):
         self.blackboard = self.attach_blackboard_client()
         self.blackboard.register_key(
             key="deltaYaw", access=py_trees.common.Access.READ)
+        self.target_angle = self.okon.sens['imu']['rot']['y'] + \
+            self.blackboard.deltaYaw
         self.logger.debug("%s.__init__()" % (self.__class__.__name__))
 
     def initialise(self):
@@ -179,9 +183,6 @@ class RotateDeltaYawAngle(py_trees.behaviour.Behaviour):
         )
         return new_status
 
-    def update_add_angle(self, new_add_angle):
-        self.add_angle = new_add_angle
-
     def terminate(self, new_status):
         """Nothing to clean up in this example."""
         self.logger.debug(
@@ -199,6 +200,7 @@ class TryDetectNTimes(py_trees.behaviour.Behaviour):
         self.okon = okon
         self.object = object
         self.n = n
+        self.counter = 1
         self.blackboard = self.attach_blackboard_client()
         self.blackboard.register_key(
             key="detection", access=py_trees.common.Access.WRITE)
