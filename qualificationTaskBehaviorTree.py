@@ -22,7 +22,7 @@ def create_root():
 	calculate_delta_yaw = CalculateDeltaYaw(
 		name="Calculate delta yaw", okon=oc.okon)
 	set_depth = SetDepth(
-		name="Set Depth to 1.1 m", okon=oc.okon, depth=1.1, delta=0.005)
+		name="Set Depth to 1.1 m", okon=oc.okon, depth=1.1, delta=0.05)
 	rotate_deltaYaw = RotateDeltaYawAngle(
 		name="Turn deltaYaw angle", okon=oc.okon, delta=2.)
 	set_velocity = SetVelocity(

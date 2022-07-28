@@ -1,6 +1,7 @@
 import py_trees
 import math
 import time
+import sys
 
 from okonClient import Okon
 
@@ -11,7 +12,7 @@ class SetDepth(py_trees.behaviour.Behaviour):
                  name: str = "set depth",
                  okon: Okon = None,
                  depth: float = 0.6,
-                 delta: float = .005):
+                 delta: float = .05):
         super().__init__(name)
         self.okon = okon
         self.depth = depth
@@ -21,7 +22,7 @@ class SetDepth(py_trees.behaviour.Behaviour):
     def initialise(self):
         self.logger.debug("%s.initialise()" % (self.__class__.__name__))
 
-    def update(self):
+    def update(self) -> py_trees.common.Status:
         self.okon.set_depth(self.depth)
         new_status = py_trees.common.Status.SUCCESS if self.okon.reachedTargetDepth(
             self.delta) else py_trees.common.Status.RUNNING
@@ -384,4 +385,4 @@ class Exit(py_trees.behaviour.Behaviour):
         self.logger.debug("%s.initialise()" % (self.__class__.__name__))
 
     def update(self):
-        exit()
+        sys.exit()
