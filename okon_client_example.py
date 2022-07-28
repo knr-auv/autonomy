@@ -1,5 +1,5 @@
 import time
-from okonClient import OkonClient, PacketType, PacketFlag
+from okon_client import OkonClient, PacketType, PacketFlag
 
 def handle_simulation_reset(args = None) -> None:
     print('sim resetted')

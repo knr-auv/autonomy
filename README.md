@@ -53,11 +53,11 @@ Links to JSON files with projects of Behavior Trees:
 3. Move AUV to starting position
 
     ```bash
-    python go-to-starting-line.py
+    python go_to_starting_line.py
     ```
 
 4. Run Behavior Tree
 
     ```bash
-    python qualificationTaskBehaviorTree.py
+    python qualification_task_behavior_tree.py
     ```

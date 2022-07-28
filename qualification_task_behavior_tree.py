@@ -2,8 +2,8 @@ import py_trees
 import sys
 import time
 
-from okonClient import OkonClient
-from okonActions import TryDetectNTimes, IsGateFarEnough, CalculateDeltaYaw, RotateDeltaYawAngle, SetDepth, SetVelocity, Wait, Exit
+from okon_client import OkonClient
+from okon_actions import TryDetectNTimes, IsGateFarEnough, CalculateDeltaYaw, RotateDeltaYawAngle, SetDepth, SetVelocity, Wait, Exit
 
 oc = OkonClient(ip="127.0.0.1", port=44210, sync_interval=.05, debug=False)
 oc.connect()

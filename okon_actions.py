@@ -3,7 +3,7 @@ import math
 import time
 import sys
 
-from okonClient import Okon
+from okon_client import Okon
 
 
 class SetDepth(py_trees.behaviour.Behaviour):

@@ -2,14 +2,18 @@ import py_trees
 import sys
 import time
 
-from okonClient import OkonClient
-from okonActions import Rotate, SetDepth
+from okon_client import OkonClient
+from okon_actions import Rotate, SetDepth
 
 oc = OkonClient(ip="127.0.0.1", port=44210, sync_interval=.05, debug=False)
 oc.connect()
 time.sleep(1.)
 
 def create_root():
+    """ description
+
+    Long description
+    """
     root = py_trees.composites.Sequence("Sequence")
     set_depth_action_1 = SetDepth(name = "Set Depth to 0.2 m",okon=oc.okon, depth=0.2, delta=0.005)
     rotate_action_2 = Rotate(name = "Turn left",okon=oc.okon, add_angle=-45., delta=1.)
