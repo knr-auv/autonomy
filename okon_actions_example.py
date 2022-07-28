@@ -1,9 +1,10 @@
-import py_trees
 import sys
 import time
 
-from okon_client import OkonClient
+import py_trees
+
 from okon_actions import Rotate, SetDepth
+from okon_client import OkonClient
 
 oc = OkonClient(ip="127.0.0.1", port=44210, sync_interval=.05, debug=False)
 oc.connect()
@@ -28,6 +29,7 @@ def create_root():
 ##############################################################################
 
 def main():
+    """ Main function of the script"""
     py_trees.logging.level = py_trees.logging.Level.DEBUG
 
     root = create_root()
