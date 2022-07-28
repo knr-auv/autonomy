@@ -1,4 +1,10 @@
-import sys
+""" Script for showing usage of actions defined in okon_acions module.
+
+Script prepared for testing actions defined in okon_actions module
+in OKON simulation (simulation-2.3dev version).
+
+Run this script after starting the simulation.
+"""
 import time
 
 import py_trees
@@ -41,7 +47,7 @@ def main():
     root.setup_with_descendants()
     for i in range(0, 30):
         try:
-            print("\n--------- Tick {0} ---------\n".format(i))
+            print(f"\n--------- Tick {i} ---------\n")
             root.tick_once()
             print("\n")
             print(py_trees.display.unicode_tree(root=root, show_status=True))

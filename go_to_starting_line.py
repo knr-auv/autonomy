@@ -5,6 +5,7 @@ in a qualification task (yellow gate) in OKON simulation (simulation-2.3dev vers
 The script controls OKON to position itself on the starting line (touching the pool wall).
 
 Run this script after starting the simulation.
+Run this script before running qualification_task_behavior_tree.py script.
 """
 import time
 
