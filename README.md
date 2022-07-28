@@ -1,6 +1,6 @@
 # knr-auv/autonomy
 
-knr-auv/autonomy is a software for the development of a behavioral tree-based autonomy module for the OKOŃ AUV built by KNR AUV team.
+knr-auv/autonomy is a software for the development of a behavior tree-based autonomy module for the OKOŃ AUV built by KNR AUV team.
 
 ## Behavior Tree Editor
 
@@ -9,6 +9,10 @@ Behavioral tree projects placed in the BTs directory can be opened/edited using 
 Links to JSON files with projects of Behavior Trees:
 
 - [Qualification Task Behavior Tree](BTs/qualificationTaskProjet.json)
+
+## py_trees
+
+[Demo files](https://github.com/splintered-reality/py_trees/tree/devel/py_trees/demos) useful for implementaion software using py_trees library can be found in [the official repository](https://github.com/splintered-reality/py_trees).
 
 ## Usage
 
