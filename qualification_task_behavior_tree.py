@@ -1,6 +1,4 @@
-""" Script with implementation of behavior tree designed for qualification task (yellow gate)
-
-"""
+"""Script with implementation of behavior tree designed for qualification task (yellow gate)"""
 import time
 
 import py_trees

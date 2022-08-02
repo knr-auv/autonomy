@@ -1,6 +1,4 @@
-""" Module with implementation of OKON actions using py_trees
-
-"""
+"""Module with implementation of OKON actions using py_trees"""
 import math
 import sys
 import time
