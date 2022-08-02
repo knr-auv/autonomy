@@ -153,8 +153,7 @@ class RotateDeltaYawAngle(py_trees.behaviour.Behaviour):
         self.blackboard = self.attach_blackboard_client()
         self.blackboard.register_key(
             key="deltaYaw", access=py_trees.common.Access.READ)
-        self.target_angle = self.okon.sens['imu']['rot']['y'] + \
-            self.blackboard.deltaYaw
+        self.target_angle = self.okon.sens['imu']['rot']['y']
         self.logger.debug("%s.__init__()" % (self.__class__.__name__))
 
     def initialise(self):
