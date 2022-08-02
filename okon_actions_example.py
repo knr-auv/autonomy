@@ -38,10 +38,9 @@ def main():
     root = create_root()
     root.setup_with_descendants()
 
-    for i in range(0, 30):
+    for tick in range(0, 30):
         try:
-            tick_string = "Tick"
-            print(f"\n{tick_string:.>25} {i :.<25}\n")
+            print(f"\n{f'{tick = }':^25}\n")
             root.tick_once()
             print("\n")
             print(py_trees.display.unicode_tree(root=root, show_status=True))
