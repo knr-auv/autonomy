@@ -18,10 +18,7 @@ time.sleep(1.0)
 
 
 def create_root():
-    """description
-
-    Long description
-    """
+    """Implementation of py_trees behavior tree using okon_actions"""
     root = py_trees.composites.Sequence("Sequence")
     set_depth_action_1 = SetDepth(name="Set Depth to 0.2 m", okon=oc.okon, depth=0.2, delta=0.005)
     rotate_action_2 = Rotate(name="Turn left", okon=oc.okon, add_angle=-45.0, delta=1.0)
