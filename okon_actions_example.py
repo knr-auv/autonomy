@@ -30,21 +30,13 @@ def create_root():
     return root
 
 
-##############################################################################
-# Main
-##############################################################################
-
 def main():
     """ Main function of the script"""
     py_trees.logging.level = py_trees.logging.Level.DEBUG
 
     root = create_root()
-
-    ####################
-    # Execute
-    ####################
-
     root.setup_with_descendants()
+    
     for i in range(0, 30):
         try:
             print(f"\n--------- Tick {i} ---------\n")
