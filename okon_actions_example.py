@@ -40,7 +40,7 @@ def main():
 
     for tick in range(0, 30):
         try:
-            print(f"\n{f'{tick = }':^25}\n")
+            print(f"\n{f'{tick = }':.^30}\n")
             root.tick_once()
             print("\n")
             print(py_trees.display.unicode_tree(root=root, show_status=True))
