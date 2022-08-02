@@ -64,20 +64,10 @@ def create_root():
 
     return root
 
-
-
-##############################################################################
-# Main
-##############################################################################
-
 def main():
     py_trees.logging.level = py_trees.logging.Level.DEBUG
 
     root = create_root()
-
-####################
-# Execute
-####################
 
     root.setup_with_descendants()
     for i in range(0, 200):
