@@ -65,7 +65,7 @@ def main():
     root = create_root()
 
     root.setup_with_descendants()
-    for tick in range(0, 200):
+    for tick in range(200):
         try:
             print(f"\n{f'{tick = }':.^30}\n")
             root.tick_once()
