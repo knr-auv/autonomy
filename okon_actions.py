@@ -8,6 +8,13 @@ import py_trees
 from okon_client import Okon
 
 
+class Status:
+    SUCCESS = py_trees.common.Status.SUCCESS
+    FAILURE = py_trees.common.Status.FAILURE
+    RUNNING = py_trees.common.Status.RUNNING
+    INVALID = py_trees.common.Status.INVALID
+
+
 class SetDepth(py_trees.behaviour.Behaviour):
     def __init__(self, name: str = "set depth", okon: Okon = None, depth: float = 0.6, delta: float = 0.05):
         super().__init__(name)
@@ -19,14 +26,10 @@ class SetDepth(py_trees.behaviour.Behaviour):
     def initialise(self):
         self.logger.debug("%s.initialise()" % (self.__class__.__name__))
 
-    def update(self) -> py_trees.common.Status:
+    def update(self):
         self.okon.set_depth(self.depth)
-        new_status = (
-            py_trees.common.Status.SUCCESS
-            if self.okon.reachedTargetDepth(self.delta)
-            else py_trees.common.Status.RUNNING
-        )
-        if new_status == py_trees.common.Status.SUCCESS:
+        new_status = Status.SUCCESS if self.okon.reachedTargetDepth(self.delta) else Status.RUNNING
+        if new_status == Status.SUCCESS:
             self.feedback_message = "Target depth of {0} m reached.".format(self.depth)
         else:
             self.feedback_message = "Current depth {0:.3f}. Waiting for target depth of {1} m.".format(
@@ -59,8 +62,8 @@ class SetVelocity(py_trees.behaviour.Behaviour):
 
     def update(self):
         self.okon.set_stable_vel(x=self.x, y=self.y, z=self.z)
-        new_status = py_trees.common.Status.SUCCESS
-        if new_status == py_trees.common.Status.SUCCESS:
+        new_status = Status.SUCCESS
+        if new_status == Status.SUCCESS:
             self.feedback_message = "Speed set as: Vx = {0:.3f} Vy = {1:.3f} Vz = {2:.3f}.".format(
                 self.x, self.y, self.z
             )
@@ -92,11 +95,11 @@ class Rotate(py_trees.behaviour.Behaviour):
     def update(self):
         self.okon.set_stable_rot(y=self.target_angle)
         new_status = (
-            py_trees.common.Status.SUCCESS
+            Status.SUCCESS
             if self.okon.reachedTargetRotation(self.delta)
-            else py_trees.common.Status.RUNNING
+            else Status.RUNNING
         )
-        if new_status == py_trees.common.Status.SUCCESS:
+        if new_status == Status.SUCCESS:
             self.feedback_message = "Target rotation of {0} degrees reached.".format(self.target_angle)
         else:
             self.feedback_message = (
@@ -136,11 +139,11 @@ class RotateDeltaYawAngle(py_trees.behaviour.Behaviour):
     def update(self):
         self.okon.set_stable_rot(y=self.target_angle)
         new_status = (
-            py_trees.common.Status.SUCCESS
+            Status.SUCCESS
             if self.okon.reachedTargetRotation(self.delta)
-            else py_trees.common.Status.RUNNING
+            else Status.RUNNING
         )
-        if new_status == py_trees.common.Status.SUCCESS:
+        if new_status == Status.SUCCESS:
             self.feedback_message = "Target rotation of {0} degrees reached.".format(self.target_angle)
         else:
             self.feedback_message = (
@@ -176,14 +179,14 @@ class TryDetectNTimes(py_trees.behaviour.Behaviour):
     def update(self):
         detection = self.okon.get_detection(self.object)
         if len(detection) > 0:
-            new_status = py_trees.common.Status.SUCCESS
+            new_status = Status.SUCCESS
             self.blackboard.detection = detection
         elif self.counter == self.n:
-            new_status = py_trees.common.Status.FAILURE
+            new_status = Status.FAILURE
         else:
-            new_status = py_trees.common.Status.RUNNING
+            new_status = Status.RUNNING
 
-        if new_status == py_trees.common.Status.SUCCESS:
+        if new_status == Status.SUCCESS:
             self.feedback_message = "Object {0} detected in attempt number {1}".format(self.object, self.counter)
         else:
             self.feedback_message = "Object {0} undetected in attempt number {1}".format(self.object, self.counter)
@@ -215,7 +218,7 @@ class CalculateDeltaYaw(py_trees.behaviour.Behaviour):
     def update(self):
         detection = self.blackboard.detection
         if len(detection) > 0:
-            new_status = py_trees.common.Status.SUCCESS
+            new_status = Status.SUCCESS
             hfov = 60
             gate = detection[0]
             if gate["distance"] < 1:
@@ -226,9 +229,9 @@ class CalculateDeltaYaw(py_trees.behaviour.Behaviour):
                 self.deltaYaw = math.atan(center / cameraPlaneX) / math.pi * 180
             self.blackboard.deltaYaw = self.deltaYaw
         else:
-            new_status = py_trees.common.Status.FAILURE
+            new_status = Status.FAILURE
 
-        if new_status == py_trees.common.Status.SUCCESS:
+        if new_status == Status.SUCCESS:
             self.feedback_message = "Delta Yaw was calculated and is equal to {0}".format(self.deltaYaw)
         else:
             self.feedback_message = "There were no objects in the detection parameter in blackboard."
@@ -258,10 +261,10 @@ class IsGateFarEnough(py_trees.behaviour.Behaviour):
     def update(self):
         gate = self.blackboard.detection[0]
         new_status = (
-            py_trees.common.Status.SUCCESS if gate["distance"] > self.max_distance else py_trees.common.Status.FAILURE
+            Status.SUCCESS if gate["distance"] > self.max_distance else Status.FAILURE
         )
 
-        if new_status == py_trees.common.Status.SUCCESS:
+        if new_status == Status.SUCCESS:
             self.feedback_message = "Gate is in distance of {0:.3f} m".format(gate["distance"])
         else:
             self.feedback_message = "Gate is closer than max distance set to {0:.3f}m.".format(self.max_distance)
@@ -288,8 +291,8 @@ class Wait(py_trees.behaviour.Behaviour):
 
     def update(self):
         time.sleep(self.secs)
-        new_status = py_trees.common.Status.SUCCESS
-        if new_status == py_trees.common.Status.SUCCESS:
+        new_status = Status.SUCCESS
+        if new_status == Status.SUCCESS:
             self.feedback_message = "Robot waited for {0} secunds.".format(self.secs)
         self.logger.debug(
             "%s.update()[%s->%s][%s]" % (self.__class__.__name__, self.status, new_status, self.feedback_message)
